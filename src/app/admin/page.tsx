@@ -17,8 +17,8 @@ import {
   ArrowLeft,
   Sparkles,
 } from "lucide-react";
-import { initialStudentEvidence, initialUserActivity } from "@/lib/data";
-import { StudentEvidence, UserActivity } from "@/lib/types";
+import { initialCourses, initialStudentEvidence, initialUserActivity } from "@/lib/data";
+import { Course, StudentEvidence, UserActivity } from "@/lib/types";
 
 export default function AdminPage() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
@@ -28,9 +28,12 @@ export default function AdminPage() {
   const [loginError, setLoginError] = useState("");
 
   // Admin Dashboard State
-  const [activeTab, setActiveTab] = useState<"overview" | "students" | "evidence">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "students" | "evidence" | "courses">("overview");
   const [evidenceList, setEvidenceList] = useState<StudentEvidence[]>(initialStudentEvidence);
   const [studentActivities] = useState<UserActivity[]>(initialUserActivity);
+  const [coursesList, setCoursesList] = useState<Course[]>(initialCourses);
+  const [priceSuccess, setPriceSuccess] = useState("");
+  const [updatingCourseId, setUpdatingCourseId] = useState<string | null>(null);
 
   // New Evidence Form State
   const [newStudentName, setNewStudentName] = useState("");
@@ -116,6 +119,44 @@ export default function AdminPage() {
     setNewTestimonial("");
 
     setTimeout(() => setFormSuccess(""), 4000);
+  };
+
+  const handleUpdateCoursePrice = async (courseId: string, newPrice: number) => {
+    setUpdatingCourseId(courseId);
+    setPriceSuccess("");
+
+    try {
+      const res = await fetch("/api/courses", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ courseId, price: newPrice, originalPrice: newPrice * 2 }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setCoursesList((prev) =>
+          prev.map((c) =>
+            c.id === courseId
+              ? { ...c, price: newPrice, originalPrice: newPrice * 2 }
+              : c
+          )
+        );
+        setPriceSuccess(`Price updated successfully to ${newPrice} ETB!`);
+        setTimeout(() => setPriceSuccess(""), 3500);
+      }
+    } catch {
+      // fallback local update
+      setCoursesList((prev) =>
+        prev.map((c) =>
+          c.id === courseId
+            ? { ...c, price: newPrice, originalPrice: newPrice * 2 }
+            : c
+        )
+      );
+    } finally {
+      setUpdatingCourseId(null);
+    }
   };
 
   if (isAuthenticated === null) {
@@ -277,6 +318,16 @@ export default function AdminPage() {
             }`}
           >
             Manage Student Evidence & Proof ({evidenceList.length})
+          </button>
+          <button
+            onClick={() => setActiveTab("courses")}
+            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+              activeTab === "courses"
+                ? "bg-slate-900 text-white shadow-xs"
+                : "bg-white text-slate-600 hover:bg-slate-100 border border-slate-200"
+            }`}
+          >
+            Course Prices ({coursesList.length} Courses - Default 2,500 ETB)
           </button>
         </div>
 
@@ -630,6 +681,81 @@ export default function AdminPage() {
                   </div>
                 ))}
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* Tab 4: Course Pricing Manager (Default 2,500 ETB) */}
+        {activeTab === "courses" && (
+          <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h2 className="text-lg font-bold text-slate-900">Course Pricing & Curriculum Management</h2>
+                <p className="text-xs text-slate-500">
+                  Update course tuition prices in Ethiopian Birr (ETB). Current default price is 2,500 ETB.
+                </p>
+              </div>
+              {priceSuccess && (
+                <div className="px-3 py-1.5 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold rounded-lg">
+                  {priceSuccess}
+                </div>
+              )}
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead>
+                  <tr className="border-b border-slate-200 text-slate-400 font-semibold uppercase tracking-wider text-[10px]">
+                    <th className="pb-3">Course Title</th>
+                    <th className="pb-3">Category</th>
+                    <th className="pb-3">Instructor</th>
+                    <th className="pb-3">Current Price (ETB)</th>
+                    <th className="pb-3">Original Price (ETB)</th>
+                    <th className="pb-3 text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {coursesList.map((course) => (
+                    <tr key={course.id} className="hover:bg-slate-50">
+                      <td className="py-3.5 font-bold text-slate-900 max-w-xs">{course.title}</td>
+                      <td className="py-3.5">
+                        <span className="text-[10px] font-bold text-sky-700 bg-sky-50 px-2 py-0.5 rounded border border-sky-200">
+                          {course.category}
+                        </span>
+                      </td>
+                      <td className="py-3.5 text-slate-600">{course.instructor}</td>
+                      <td className="py-3.5">
+                        <div className="flex items-center gap-1">
+                          <input
+                            type="number"
+                            defaultValue={course.price}
+                            id={`price-${course.id}`}
+                            className="w-24 px-2 py-1 rounded border border-slate-300 font-mono font-bold text-slate-900 text-xs focus:outline-none focus:border-sky-500"
+                          />
+                          <span className="font-bold text-slate-500 text-xs">ETB</span>
+                        </div>
+                      </td>
+                      <td className="py-3.5 text-slate-400 font-mono">
+                        {course.originalPrice.toLocaleString()} ETB
+                      </td>
+                      <td className="py-3.5 text-right">
+                        <button
+                          onClick={() => {
+                            const input = document.getElementById(`price-${course.id}`) as HTMLInputElement;
+                            if (input) {
+                              handleUpdateCoursePrice(course.id, Number(input.value));
+                            }
+                          }}
+                          disabled={updatingCourseId === course.id}
+                          className="px-3 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition-colors cursor-pointer disabled:opacity-50"
+                        >
+                          {updatingCourseId === course.id ? "Saving..." : "Save Price"}
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
         )}

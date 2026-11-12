@@ -28,14 +28,6 @@ export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [expandedCourse, setExpandedCourse] = useState<string | null>(null);
 
-  // Email verification test state
-  const [verifyEmail, setVerifyEmail] = useState("");
-  const [verifyLoading, setVerifyLoading] = useState(false);
-  const [verifyStatus, setVerifyStatus] = useState<{
-    type: "success" | "error" | null;
-    message: string;
-  }>({ type: null, message: "" });
-
   const categories = [
     "All",
     "Social Media Ads",
@@ -49,43 +41,6 @@ export default function Home() {
     selectedCategory === "All"
       ? courses
       : courses.filter((c) => c.category === selectedCategory);
-
-  const handleSendVerification = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!verifyEmail) return;
-
-    setVerifyLoading(true);
-    setVerifyStatus({ type: null, message: "" });
-
-    try {
-      const res = await fetch("/api/send-verification", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: verifyEmail }),
-      });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        setVerifyStatus({
-          type: "success",
-          message: `Verification code sent to ${verifyEmail}! Delivered from verify@apexmarketinget.com`,
-        });
-      } else {
-        setVerifyStatus({
-          type: "error",
-          message: data.error || "Failed to send email verification",
-        });
-      }
-    } catch {
-      setVerifyStatus({
-        type: "error",
-        message: "An error occurred while sending.",
-      });
-    } finally {
-      setVerifyLoading(false);
-    }
-  };
 
   return (
     <div className="min-h-screen bg-white text-slate-800 flex flex-col font-sans selection:bg-sky-500 selection:text-white">
@@ -290,7 +245,7 @@ export default function Home() {
       {/* Student Evidence & Success Proof Section */}
       <section id="evidence" className="py-16 sm:py-24 bg-white border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-12">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10 sm:mb-12">
             <div>
               <div className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200 mb-2">
                 <CheckCircle className="w-3.5 h-3.5 text-emerald-600" /> Verified Student Results
@@ -298,17 +253,10 @@ export default function Home() {
               <h2 className="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
                 Real Case Studies & Earnings Evidence
               </h2>
-              <p className="mt-2 text-sm text-slate-500 max-w-xl">
+              <p className="mt-2 text-xs sm:text-sm text-slate-500 max-w-xl">
                 See verified results from students who implemented our ad strategies, creative blueprints, and funnel optimization systems.
               </p>
             </div>
-
-            <Link
-              href="/admin"
-              className="text-xs font-semibold text-slate-600 hover:text-slate-900 inline-flex items-center gap-1 bg-slate-50 px-3 py-2 rounded-lg border border-slate-200"
-            >
-              <Shield className="w-3.5 h-3.5 text-slate-500" /> Admin: Add New Evidence
-            </Link>
           </div>
 
           {/* Evidence Cards */}
@@ -415,53 +363,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Email Verification Live Testing Card */}
-      <section className="py-14 bg-white border-b border-slate-200">
-        <div className="max-w-2xl mx-auto px-4 sm:px-6 text-center">
-          <div className="w-10 h-10 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center mx-auto mb-3">
-            <Shield className="w-5 h-5" />
-          </div>
-          <h2 className="text-xl font-bold text-slate-900">
-            Test Email Verification Delivery
-          </h2>
-          <p className="text-xs text-slate-500 mt-1 max-w-md mx-auto mb-6">
-            Enter your email below to receive a live verification email sent directly from our verified domain <code className="text-slate-800 font-mono font-bold">verify@apexmarketinget.com</code> into your Primary Inbox.
-          </p>
-
-          <form onSubmit={handleSendVerification} className="flex flex-col sm:flex-row gap-2 max-w-md mx-auto">
-            <input
-              type="email"
-              required
-              value={verifyEmail}
-              onChange={(e) => setVerifyEmail(e.target.value)}
-              placeholder="e.g. your.email@gmail.com"
-              className="flex-1 px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:border-sky-500 text-slate-900"
-            />
-            <button
-              type="submit"
-              disabled={verifyLoading}
-              className="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition-colors disabled:opacity-50 cursor-pointer shadow-sm"
-            >
-              {verifyLoading ? "Sending..." : "Send Verification"}
-            </button>
-          </form>
-
-          {verifyStatus.message && (
-            <div
-              className={`mt-4 p-3 rounded-xl text-xs max-w-md mx-auto border ${
-                verifyStatus.type === "success"
-                  ? "bg-emerald-50 border-emerald-200 text-emerald-800"
-                  : "bg-rose-50 border-rose-200 text-rose-800"
-              }`}
-            >
-              {verifyStatus.message}
-            </div>
-          )}
-        </div>
-      </section>
-
       {/* Footer */}
-      <footer className="bg-slate-50 border-t border-slate-200 py-12">
+      <footer className="bg-slate-50 border-t border-slate-200 py-10 sm:py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-6 text-center sm:text-left">
           <div className="flex items-center gap-3">
             <div className="relative w-9 h-9 rounded-xl overflow-hidden border border-slate-200 bg-black">
@@ -473,11 +376,10 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="flex items-center gap-6 text-xs text-slate-500">
+          <div className="flex flex-wrap items-center justify-center gap-5 sm:gap-6 text-xs text-slate-500">
             <a href="#courses" className="hover:text-slate-900">Courses</a>
             <a href="#evidence" className="hover:text-slate-900">Student Proof</a>
             <Link href="/dashboard" className="hover:text-slate-900">Student Portal</Link>
-            <Link href="/admin" className="hover:text-slate-900 font-semibold text-slate-700">Admin Portal</Link>
             <a href="mailto:apexmarketinghub01@gmail.com" className="hover:text-slate-900">Support</a>
           </div>
 

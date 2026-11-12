@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
-import { LogIn, UserPlus, Shield, LayoutDashboard, Menu, X } from "lucide-react";
+import { LogIn, UserPlus, LayoutDashboard, Menu, X } from "lucide-react";
 import AuthModal from "./AuthModal";
 
 export default function Navbar() {
@@ -19,11 +19,11 @@ export default function Navbar() {
 
   return (
     <>
-      <header className="sticky top-0 z-40 w-full bg-white/90 backdrop-blur-md border-b border-slate-100 shadow-xs">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between">
+      <header className="sticky top-0 z-40 w-full bg-white/95 backdrop-blur-md border-b border-slate-100 shadow-xs">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-18 flex items-center justify-between">
           {/* Logo & Brand */}
-          <Link href="/" className="flex items-center gap-3 group">
-            <div className="relative w-11 h-11 rounded-xl overflow-hidden shadow-xs border border-slate-200 bg-black flex-shrink-0 transition-transform group-hover:scale-105">
+          <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group">
+            <div className="relative w-10 h-10 sm:w-11 sm:h-11 rounded-xl overflow-hidden shadow-xs border border-slate-200 bg-black flex-shrink-0 transition-transform group-hover:scale-105">
               <Image
                 src="/logo.jpg"
                 alt="Apex Marketing Hub"
@@ -34,10 +34,10 @@ export default function Navbar() {
               />
             </div>
             <div className="flex flex-col">
-              <span className="font-extrabold text-lg sm:text-xl tracking-tight text-slate-900 group-hover:text-sky-600 transition-colors">
+              <span className="font-extrabold text-base sm:text-lg tracking-tight text-slate-900 group-hover:text-sky-600 transition-colors">
                 Apex Marketing
               </span>
-              <span className="text-[10px] tracking-widest uppercase font-semibold text-sky-600 -mt-1">
+              <span className="text-[9px] sm:text-[10px] tracking-widest uppercase font-semibold text-sky-600 -mt-0.5">
                 Hub Platform
               </span>
             </div>
@@ -49,7 +49,7 @@ export default function Navbar() {
               Courses
             </a>
             <a href="#evidence" className="hover:text-slate-900 transition-colors">
-              Student Evidence
+              Student Results
             </a>
             <a href="#features" className="hover:text-slate-900 transition-colors">
               Why Apex
@@ -63,20 +63,11 @@ export default function Navbar() {
             </Link>
           </nav>
 
-          {/* Desktop Actions */}
+          {/* Desktop Actions (Unified Login for Students & Admin) */}
           <div className="hidden md:flex items-center gap-3">
-            <Link
-              href="/admin"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 transition-colors border border-slate-200/80"
-              title="Admin Monitor & Evidence Manager"
-            >
-              <Shield className="w-3.5 h-3.5 text-slate-600" />
-              Admin Portal
-            </Link>
-
             <button
               onClick={() => openAuth("login")}
-              className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-slate-700 hover:text-slate-900 transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 px-4 py-2 text-sm font-semibold text-slate-700 hover:text-slate-900 transition-colors cursor-pointer"
             >
               <LogIn className="w-4 h-4 text-slate-500" />
               Log In
@@ -84,18 +75,24 @@ export default function Navbar() {
 
             <button
               onClick={() => openAuth("signup")}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-medium text-sm transition-all shadow-sm hover:shadow-md cursor-pointer"
+              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-semibold text-sm transition-all shadow-sm hover:shadow-md cursor-pointer"
             >
               <UserPlus className="w-4 h-4" />
               Sign Up
             </button>
           </div>
 
-          {/* Mobile Menu Toggle */}
+          {/* Mobile Quick Action & Menu Button */}
           <div className="flex md:hidden items-center gap-2">
             <button
+              onClick={() => openAuth("login")}
+              className="px-3 py-1.5 rounded-lg bg-sky-50 text-sky-700 text-xs font-bold border border-sky-200"
+            >
+              Log In
+            </button>
+            <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 text-slate-600 hover:text-slate-900 focus:outline-none"
+              className="p-1.5 text-slate-700 hover:text-slate-900 focus:outline-none"
               aria-label="Toggle menu"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -103,59 +100,51 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Mobile Dropdown Menu */}
+        {/* Mobile Dropdown Menu (Mobile-first) */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-b border-slate-200 bg-white px-4 pt-3 pb-6 space-y-3">
+          <div className="md:hidden border-b border-slate-200 bg-white px-4 pt-3 pb-5 space-y-2.5 animate-in slide-in-from-top-2 duration-150">
             <a
               href="#courses"
               onClick={() => setMobileMenuOpen(false)}
-              className="block py-2 text-sm font-medium text-slate-700 hover:text-sky-600"
+              className="block py-2 text-sm font-semibold text-slate-800 hover:text-sky-600 border-b border-slate-100"
             >
-              Courses
+              Courses (2,500 ETB)
             </a>
             <a
               href="#evidence"
               onClick={() => setMobileMenuOpen(false)}
-              className="block py-2 text-sm font-medium text-slate-700 hover:text-sky-600"
+              className="block py-2 text-sm font-semibold text-slate-800 hover:text-sky-600 border-b border-slate-100"
             >
-              Student Evidence & Proof
+              Student Success Proof
             </a>
             <Link
               href="/dashboard"
               onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center gap-2 py-2 text-sm font-medium text-slate-700 hover:text-sky-600"
+              className="flex items-center gap-2 py-2 text-sm font-semibold text-slate-800 hover:text-sky-600 border-b border-slate-100"
             >
               <LayoutDashboard className="w-4 h-4 text-sky-500" />
-              Student Portal Dashboard
-            </Link>
-            <Link
-              href="/admin"
-              onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center gap-2 py-2 text-sm font-medium text-slate-700 hover:text-sky-600"
-            >
-              <Shield className="w-4 h-4 text-slate-500" />
-              Admin Portal
+              Student Portal
             </Link>
 
             <div className="pt-2 flex flex-col gap-2">
               <button
                 onClick={() => openAuth("login")}
-                className="w-full py-2.5 px-4 rounded-lg border border-slate-300 text-slate-800 font-medium text-sm text-center"
+                className="w-full py-2.5 px-4 rounded-xl border border-slate-300 text-slate-800 font-bold text-sm text-center"
               >
                 Log In
               </button>
               <button
                 onClick={() => openAuth("signup")}
-                className="w-full py-2.5 px-4 rounded-lg bg-sky-600 text-white font-medium text-sm text-center shadow-sm"
+                className="w-full py-2.5 px-4 rounded-xl bg-sky-600 text-white font-bold text-sm text-center shadow-xs"
               >
-                Sign Up
+                Create Account (Sign Up)
               </button>
             </div>
           </div>
         )}
       </header>
 
-      {/* Auth Modal */}
+      {/* Unified Auth Modal */}
       <AuthModal
         isOpen={authOpen}
         onClose={() => setAuthOpen(false)}
