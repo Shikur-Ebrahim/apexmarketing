@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
+import TestimonyModal from "@/components/TestimonyModal";
 import { initialCourses, initialStudentEvidence } from "@/lib/data";
 import { Course, StudentEvidence } from "@/lib/types";
 import {
@@ -13,157 +14,236 @@ import {
   CheckCircle,
   TrendingUp,
   ArrowRight,
-  Shield,
   Zap,
   Users,
-  Target,
   ChevronDown,
   ChevronUp,
-  Check,
+  Sparkles,
+  Smartphone,
+  Briefcase,
+  Layers,
+  Award,
 } from "lucide-react";
 
 export default function Home() {
   const [courses] = useState<Course[]>(initialCourses);
   const [evidenceList] = useState<StudentEvidence[]>(initialStudentEvidence);
-  const [selectedCategory, setSelectedCategory] = useState<string>("All");
+
+  // Filter States
+  const [audienceFilter, setAudienceFilter] = useState<"All" | "Beginner" | "Business">("All");
+  const [platformFilter, setPlatformFilter] = useState<string>("All");
   const [expandedCourse, setExpandedCourse] = useState<string | null>(null);
 
-  const categories = [
+  // Active Testimony Modal State
+  const [activeTestimony, setActiveTestimony] = useState<StudentEvidence | null>(null);
+
+  const platforms = [
     "All",
-    "Social Media Ads",
-    "Search & PPC",
+    "TikTok",
+    "Facebook & Instagram",
+    "Telegram & WhatsApp",
+    "YouTube",
     "E-Commerce",
-    "AI Marketing",
-    "Strategy",
   ];
 
-  const filteredCourses =
-    selectedCategory === "All"
-      ? courses
-      : courses.filter((c) => c.category === selectedCategory);
+  const filteredCourses = courses.filter((course) => {
+    // Audience match
+    const matchAudience =
+      audienceFilter === "All"
+        ? true
+        : audienceFilter === "Beginner"
+        ? course.targetAudience === "For Beginners (Zero Capital)" || course.targetAudience === "For Both"
+        : course.targetAudience === "For Business Owners" || course.targetAudience === "For Both";
+
+    // Platform match
+    const matchPlatform =
+      platformFilter === "All" ? true : course.category === platformFilter;
+
+    return matchAudience && matchPlatform;
+  });
 
   return (
     <div className="min-h-screen bg-white text-slate-800 flex flex-col font-sans selection:bg-sky-500 selection:text-white">
-      {/* Top Navbar */}
+      {/* Top Sticky Navigation */}
       <Navbar />
 
-      {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-slate-50 via-white to-white py-16 sm:py-24 border-b border-slate-100">
+      {/* Hero Section (Mobile-First) */}
+      <section className="relative overflow-hidden bg-gradient-to-b from-slate-50 via-white to-white pt-10 pb-14 sm:py-20 border-b border-slate-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center flex flex-col items-center">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-sky-50 border border-sky-200 text-sky-700 text-xs font-semibold mb-6 shadow-xs">
+          {/* Top Pill */}
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-sky-50 border border-sky-200 text-sky-700 text-xs font-bold mb-5 shadow-xs">
             <span className="w-2 h-2 rounded-full bg-sky-500 animate-pulse" />
-            <span>The Premier Marketing & E-Commerce Learning Platform</span>
+            <span>Monetize TikTok, Facebook, Instagram, YouTube & Telegram</span>
           </div>
 
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight max-w-4xl leading-tight sm:leading-none">
-            Master Digital Marketing.{" "}
+          <h1 className="text-2xl sm:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight max-w-4xl leading-tight sm:leading-none">
+            Make Money & Scale With{" "}
             <span className="bg-gradient-to-r from-sky-600 via-blue-600 to-indigo-600 bg-clip-text text-transparent">
-              Scale Brands Predictably.
+              Social Media in Ethiopia
             </span>
           </h1>
 
-          <p className="mt-6 text-base sm:text-lg text-slate-600 max-w-2xl leading-relaxed">
-            Step-by-step masterclasses built on $15M+ in verified ad spend. Learn Meta Ads, TikTok Shop, Google Performance Max, and AI marketing workflows from active practitioners.
+          <p className="mt-4 sm:mt-6 text-sm sm:text-lg text-slate-600 max-w-2xl leading-relaxed">
+            Whether you want to <strong>start from scratch with zero capital</strong> using just your smartphone, or you are a <strong>business owner scaling to 100K+ ETB monthly profit</strong>: Learn practical, battle-tested monetization frameworks.
           </p>
 
-          {/* Call to actions */}
-          <div className="mt-8 flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
-            <a
-              href="#courses"
-              className="w-full sm:w-auto px-7 py-3.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2"
+          {/* Quick Dual-Track Buttons (Mobile Screen First) */}
+          <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto max-w-md sm:max-w-none">
+            <button
+              onClick={() => {
+                setAudienceFilter("Beginner");
+                const el = document.getElementById("courses");
+                el?.scrollIntoView({ behavior: "smooth" });
+              }}
+              className="w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-sky-600 hover:bg-sky-500 text-white font-extrabold text-sm transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2.5 cursor-pointer"
             >
-              Browse All Courses <ArrowRight className="w-4 h-4" />
-            </a>
-            <a
-              href="#evidence"
-              className="w-full sm:w-auto px-7 py-3.5 rounded-xl bg-white hover:bg-slate-50 text-slate-700 font-bold text-sm border border-slate-200 transition-all flex items-center justify-center gap-2"
+              <Smartphone className="w-4 h-4" />
+              I Have No Business (Start from Zero)
+            </button>
+
+            <button
+              onClick={() => {
+                setAudienceFilter("Business");
+                const el = document.getElementById("courses");
+                el?.scrollIntoView({ behavior: "smooth" });
+              }}
+              className="w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-sm transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2.5 cursor-pointer"
             >
-              View Student Results & Proof
-            </a>
+              <Briefcase className="w-4 h-4 text-sky-400" />
+              I Have a Business (Scale My Sales)
+            </button>
           </div>
 
-          {/* Social Proof Counters */}
-          <div className="mt-14 pt-8 border-t border-slate-200/80 w-full max-w-4xl grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-            <div>
-              <div className="text-2xl sm:text-3xl font-extrabold text-slate-900">4,800+</div>
-              <div className="text-xs text-slate-500 font-medium mt-0.5">Active Students</div>
+          {/* Live Platform Counters (Mobile-first grid) */}
+          <div className="mt-10 sm:mt-14 pt-6 sm:pt-8 border-t border-slate-200/80 w-full max-w-4xl grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 text-center">
+            <div className="p-3 bg-slate-50/70 rounded-xl border border-slate-100">
+              <div className="text-xl sm:text-3xl font-black text-slate-900">4,800+</div>
+              <div className="text-[11px] sm:text-xs text-slate-500 font-semibold mt-0.5">Enrolled Students</div>
             </div>
-            <div>
-              <div className="text-2xl sm:text-3xl font-extrabold text-slate-900">4.9 / 5.0</div>
-              <div className="text-xs text-slate-500 font-medium mt-0.5">Average Rating (1,400+ reviews)</div>
+            <div className="p-3 bg-slate-50/70 rounded-xl border border-slate-100">
+              <div className="text-xl sm:text-3xl font-black text-slate-900">2,500 ETB</div>
+              <div className="text-[11px] sm:text-xs text-slate-500 font-semibold mt-0.5">All-Access Tuition</div>
             </div>
-            <div>
-              <div className="text-2xl sm:text-3xl font-extrabold text-slate-900">150M+ ETB</div>
-              <div className="text-xs text-slate-500 font-medium mt-0.5">Ad Spend Tested Frameworks</div>
+            <div className="p-3 bg-slate-50/70 rounded-xl border border-slate-100">
+              <div className="text-xl sm:text-3xl font-black text-slate-900">150M+ ETB</div>
+              <div className="text-[11px] sm:text-xs text-slate-500 font-semibold mt-0.5">Tested Ad Frameworks</div>
             </div>
-            <div>
-              <div className="text-2xl sm:text-3xl font-extrabold text-slate-900">100%</div>
-              <div className="text-xs text-slate-500 font-medium mt-0.5">Practical Case Studies</div>
+            <div className="p-3 bg-slate-50/70 rounded-xl border border-slate-100">
+              <div className="text-xl sm:text-3xl font-black text-emerald-600">4.9 / 5.0</div>
+              <div className="text-[11px] sm:text-xs text-slate-500 font-semibold mt-0.5">Verified Reviews</div>
             </div>
           </div>
         </div>
       </section>
 
       {/* Courses Catalog Section */}
-      <section id="courses" className="py-16 sm:py-20 bg-slate-50/60 border-b border-slate-200/80">
+      <section id="courses" className="py-12 sm:py-20 bg-slate-50/60 border-b border-slate-200/80">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-10">
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-              Curated Courses for High-Impact Growth
+          <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-10">
+            <div className="inline-flex items-center gap-1.5 text-xs font-bold text-sky-700 bg-sky-50 px-3 py-1 rounded-full border border-sky-200 mb-2">
+              <Layers className="w-3.5 h-3.5 text-sky-600" /> Choose Your Path
+            </div>
+            <h2 className="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+              Social Media Monetization Programs
             </h2>
-            <p className="mt-2 text-sm text-slate-600">
-              Each course is designed with real-world campaign workflows, downloadable creative templates, and direct action checklists.
+            <p className="mt-2 text-xs sm:text-sm text-slate-600">
+              Every course is engineered with actionable step-by-step videos, copy-paste templates, and direct monetization strategies.
             </p>
           </div>
 
-          {/* Category Filter Pills */}
-          <div className="flex flex-wrap items-center justify-center gap-2 mb-10">
-            {categories.map((cat) => (
+          {/* Track Filter Toggle (Beginner vs Business Owner) */}
+          <div className="max-w-xl mx-auto p-1.5 bg-slate-200/70 rounded-2xl flex items-center justify-between gap-1 mb-6 shadow-inner">
+            <button
+              onClick={() => setAudienceFilter("All")}
+              className={`flex-1 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+                audienceFilter === "All"
+                  ? "bg-white text-slate-900 shadow-sm"
+                  : "text-slate-600 hover:text-slate-900"
+              }`}
+            >
+              🔥 All Programs
+            </button>
+            <button
+              onClick={() => setAudienceFilter("Beginner")}
+              className={`flex-1 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+                audienceFilter === "Beginner"
+                  ? "bg-sky-600 text-white shadow-sm"
+                  : "text-slate-600 hover:text-slate-900"
+              }`}
+            >
+              🚀 Start from Zero
+            </button>
+            <button
+              onClick={() => setAudienceFilter("Business")}
+              className={`flex-1 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+                audienceFilter === "Business"
+                  ? "bg-slate-900 text-white shadow-sm"
+                  : "text-slate-600 hover:text-slate-900"
+              }`}
+            >
+              💼 Scale Business
+            </button>
+          </div>
+
+          {/* Platform Pills */}
+          <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 mb-8 sm:mb-10">
+            {platforms.map((plat) => (
               <button
-                key={cat}
-                onClick={() => setSelectedCategory(cat)}
-                className={`px-4 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer ${
-                  selectedCategory === cat
+                key={plat}
+                onClick={() => setPlatformFilter(plat)}
+                className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                  platformFilter === plat
                     ? "bg-slate-900 text-white shadow-xs"
                     : "bg-white text-slate-600 hover:bg-slate-100 border border-slate-200"
                 }`}
               >
-                {cat}
+                {plat}
               </button>
             ))}
           </div>
 
           {/* Course Cards Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
             {filteredCourses.map((course) => {
               const isExpanded = expandedCourse === course.id;
 
               return (
                 <div
                   key={course.id}
-                  className="bg-white rounded-2xl border border-slate-200 shadow-xs hover:shadow-md transition-all flex flex-col justify-between overflow-hidden"
+                  className="bg-white rounded-3xl border border-slate-200 shadow-xs hover:shadow-md transition-all flex flex-col justify-between overflow-hidden"
                 >
-                  <div className="p-6">
-                    {/* Category & Badge */}
-                    <div className="flex items-center justify-between gap-2 mb-3">
+                  <div className="p-5 sm:p-6">
+                    {/* Top Badges */}
+                    <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
                       <span className="text-[11px] font-bold text-sky-700 bg-sky-50 px-2.5 py-0.5 rounded-full border border-sky-200">
-                        {course.category}
+                        {course.platformBadge}
                       </span>
-                      <span className="text-[11px] font-medium text-slate-500 bg-slate-100 px-2 py-0.5 rounded">
-                        {course.level}
+                      <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                        {course.targetAudience}
                       </span>
                     </div>
 
-                    <h3 className="text-base font-bold text-slate-900 leading-snug line-clamp-2">
+                    <h3 className="text-base sm:text-lg font-bold text-slate-900 leading-snug">
                       {course.title}
                     </h3>
-                    <p className="text-xs text-slate-500 mt-2 line-clamp-3 leading-relaxed">
+
+                    {/* Earning Potential Callout */}
+                    <div className="my-3 p-2.5 bg-gradient-to-r from-sky-50 to-blue-50/50 rounded-xl border border-sky-200/60 flex items-center gap-2">
+                      <TrendingUp className="w-4 h-4 text-sky-600 flex-shrink-0" />
+                      <div className="text-[11px] sm:text-xs font-semibold text-slate-700">
+                        Earning Potential:{" "}
+                        <strong className="text-sky-800 font-extrabold">
+                          {course.earningPotential}
+                        </strong>
+                      </div>
+                    </div>
+
+                    <p className="text-xs text-slate-500 leading-relaxed line-clamp-3">
                       {course.description}
                     </p>
 
                     {/* Metadata */}
-                    <div className="flex items-center gap-4 mt-4 text-xs text-slate-500">
+                    <div className="flex items-center gap-3 mt-4 text-xs text-slate-500">
                       <div className="flex items-center gap-1 text-amber-500 font-bold">
                         <Star className="w-3.5 h-3.5 fill-current" />
                         <span>{course.rating}</span>
@@ -183,7 +263,7 @@ export default function Home() {
                     <div className="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between">
                       <div>
                         <div className="text-xs font-bold text-slate-900">{course.instructor}</div>
-                        <div className="text-[11px] text-slate-400">{course.instructorRole}</div>
+                        <div className="text-[10px] text-slate-400">{course.instructorRole}</div>
                       </div>
                     </div>
 
@@ -191,7 +271,7 @@ export default function Home() {
                     <div className="mt-4 pt-2">
                       <button
                         onClick={() => setExpandedCourse(isExpanded ? null : course.id)}
-                        className="w-full text-left flex items-center justify-between text-xs font-semibold text-slate-600 hover:text-sky-600 transition-colors py-1 cursor-pointer"
+                        className="w-full text-left flex items-center justify-between text-xs font-bold text-sky-600 hover:text-sky-700 transition-colors py-1 cursor-pointer"
                       >
                         <span>{isExpanded ? "Hide Curriculum" : "View Curriculum Modules"}</span>
                         {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
@@ -205,7 +285,7 @@ export default function Home() {
                               <ul className="pl-3 space-y-0.5 text-slate-600 text-[11px]">
                                 {mod.lessons.map((lesson, idx) => (
                                   <li key={idx} className="flex items-center gap-1.5">
-                                    <span className="w-1 h-1 rounded-full bg-sky-500" />
+                                    <span className="w-1 h-1 rounded-full bg-sky-500 flex-shrink-0" />
                                     {lesson}
                                   </li>
                                 ))}
@@ -217,11 +297,13 @@ export default function Home() {
                     </div>
                   </div>
 
-                  {/* Pricing & CTA Button */}
-                  <div className="p-6 pt-0 mt-auto">
-                    <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
+                  {/* Pricing & CTA Button (Mobile-first large button) */}
+                  <div className="p-5 sm:p-6 pt-0 mt-auto">
+                    <div className="pt-4 border-t border-slate-100 flex items-center justify-between gap-3">
                       <div className="flex items-baseline gap-1.5">
-                        <span className="text-xl font-extrabold text-slate-900">{course.price.toLocaleString()} ETB</span>
+                        <span className="text-xl sm:text-2xl font-black text-slate-900">
+                          {course.price.toLocaleString()} ETB
+                        </span>
                         <span className="text-xs text-slate-400 line-through">
                           {course.originalPrice.toLocaleString()} ETB
                         </span>
@@ -229,9 +311,9 @@ export default function Home() {
 
                       <Link
                         href="/dashboard"
-                        className="px-4 py-2 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs transition-colors flex items-center gap-1.5 shadow-xs"
+                        className="px-5 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs sm:text-sm transition-all shadow-sm hover:shadow-md flex items-center gap-1.5 text-center"
                       >
-                        Enroll Now <ArrowRight className="w-3.5 h-3.5" />
+                        Enroll Now <ArrowRight className="w-4 h-4" />
                       </Link>
                     </div>
                   </div>
@@ -242,68 +324,76 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Student Evidence & Success Proof Section */}
-      <section id="evidence" className="py-16 sm:py-24 bg-white border-b border-slate-200">
+      {/* Student Evidence & Success Proof Section (With Actionable How-They-Did-It Modals) */}
+      <section id="evidence" className="py-14 sm:py-24 bg-white border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10 sm:mb-12">
-            <div>
-              <div className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200 mb-2">
-                <CheckCircle className="w-3.5 h-3.5 text-emerald-600" /> Verified Student Results
-              </div>
-              <h2 className="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
-                Real Case Studies & Earnings Evidence
-              </h2>
-              <p className="mt-2 text-xs sm:text-sm text-slate-500 max-w-xl">
-                See verified results from students who implemented our ad strategies, creative blueprints, and funnel optimization systems.
-              </p>
+          <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-12">
+            <div className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200 mb-2">
+              <CheckCircle className="w-3.5 h-3.5 text-emerald-600" /> Verified Earnings Evidence
             </div>
+            <h2 className="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+              Real Student Results & Earnings Proof
+            </h2>
+            <p className="mt-2 text-xs sm:text-sm text-slate-500">
+              Click any case study below to inspect the step-by-step blueprint of exactly how they made it!
+            </p>
           </div>
 
           {/* Evidence Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
             {evidenceList.map((item) => (
               <div
                 key={item.id}
-                className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs hover:shadow-md transition-all flex flex-col justify-between"
+                className="bg-white rounded-3xl border border-slate-200 p-5 shadow-xs hover:shadow-md transition-all flex flex-col justify-between"
               >
                 <div>
                   {/* Top Metric Badge */}
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-base font-extrabold text-sky-700 bg-sky-50 px-3 py-1 rounded-full border border-sky-200">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-sm sm:text-base font-black text-sky-700 bg-sky-50 px-3 py-1 rounded-full border border-sky-200">
                       {item.metric}
                     </span>
-                    <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded border border-emerald-200">
-                      <Check className="w-3 h-3 text-emerald-600" /> Verified
+                    <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded">
+                      {item.platform}
                     </span>
                   </div>
 
-                  <h3 className="font-bold text-base text-slate-900 mb-2">
+                  <h3 className="font-bold text-sm text-slate-900 mb-2 leading-snug">
                     {item.resultTitle}
                   </h3>
 
-                  <p className="text-xs text-slate-600 leading-relaxed italic mb-4">
+                  <p className="text-xs text-slate-600 leading-relaxed italic mb-4 line-clamp-3">
                     "{item.testimonial}"
                   </p>
                 </div>
 
-                {/* Student Info */}
-                <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full overflow-hidden relative border border-slate-200">
-                      <Image
-                        src={item.avatar}
-                        alt={item.studentName}
-                        fill
-                        sizes="36px"
-                        className="object-cover"
-                      />
-                    </div>
-                    <div>
-                      <div className="text-xs font-bold text-slate-900">{item.studentName}</div>
-                      <div className="text-[10px] text-slate-400">{item.courseTitle}</div>
+                <div>
+                  {/* Actionable Button to View How They Made It */}
+                  <button
+                    onClick={() => setActiveTestimony(item)}
+                    className="w-full mb-3 py-2 px-3 rounded-xl bg-slate-100 hover:bg-sky-50 hover:text-sky-700 text-slate-800 font-bold text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer border border-slate-200/80"
+                  >
+                    <Sparkles className="w-3.5 h-3.5 text-sky-600" />
+                    How They Made It & Blueprint
+                  </button>
+
+                  {/* Student Info */}
+                  <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-full overflow-hidden relative border border-slate-200">
+                        <Image
+                          src={item.avatar}
+                          alt={item.studentName}
+                          fill
+                          sizes="32px"
+                          className="object-cover"
+                        />
+                      </div>
+                      <div>
+                        <div className="text-xs font-bold text-slate-900">{item.studentName}</div>
+                        <div className="text-[10px] text-slate-400">{item.date}</div>
+                      </div>
                     </div>
                   </div>
-                  <span className="text-[10px] text-slate-400">{item.date}</span>
                 </div>
               </div>
             ))}
@@ -311,59 +401,59 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Why Apex Marketing Hub Section */}
-      <section id="features" className="py-16 sm:py-20 bg-slate-50/70 border-b border-slate-200">
+      {/* Why Apex Marketing Hub Features */}
+      <section id="features" className="py-14 sm:py-20 bg-slate-50/70 border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-12">
+          <div className="text-center max-w-2xl mx-auto mb-10">
             <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-              Why Choose Apex Marketing Hub?
+              Why Apex Marketing Hub?
             </h2>
-            <p className="mt-2 text-sm text-slate-500">
-              Unlike generic courses filled with outdated theories, our curriculum is engineered for immediate execution and measurable ROI.
+            <p className="mt-2 text-xs sm:text-sm text-slate-500">
+              Built specifically for ambitious students, creators, and business owners looking for measurable financial returns.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
-              <div className="w-10 h-10 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center mb-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs">
+              <div className="w-10 h-10 rounded-2xl bg-sky-50 text-sky-600 flex items-center justify-center mb-4">
+                <Smartphone className="w-5 h-5" />
+              </div>
+              <h3 className="text-base font-bold text-slate-900 mb-1">
+                Zero-Capital Monetization
+              </h3>
+              <p className="text-xs text-slate-500 leading-relaxed">
+                Learn how to generate real daily income with just a smartphone through viral content creation, theme pages, and affiliate deals.
+              </p>
+            </div>
+
+            <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs">
+              <div className="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mb-4">
                 <TrendingUp className="w-5 h-5" />
               </div>
               <h3 className="text-base font-bold text-slate-900 mb-1">
-                Battle-Tested $15M+ Ad Playbooks
+                Business Scaling Blueprints
               </h3>
               <p className="text-xs text-slate-500 leading-relaxed">
-                Step-by-step account structures that scale without burning budget or triggering algorithmic plateaus.
+                Scale your local store, boutique, or service business with Meta Advantage+ Ads and automated WhatsApp order funnels.
               </p>
             </div>
 
-            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
-              <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center mb-4">
-                <Zap className="w-5 h-5" />
+            <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs">
+              <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-4">
+                <Award className="w-5 h-5" />
               </div>
               <h3 className="text-base font-bold text-slate-900 mb-1">
-                AI & Automation Workflows
+                Verified Certificate & Support
               </h3>
               <p className="text-xs text-slate-500 leading-relaxed">
-                Learn how to generate 50+ high-converting creative hooks and test variations in minutes using direct-response AI frameworks.
-              </p>
-            </div>
-
-            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
-              <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-4">
-                <Users className="w-5 h-5" />
-              </div>
-              <h3 className="text-base font-bold text-slate-900 mb-1">
-                Private Student Growth Community
-              </h3>
-              <p className="text-xs text-slate-500 leading-relaxed">
-                Network with high-growth store owners, agency founders, and media buyers sharing real-time winning strategies.
+                Receive an official certificate upon graduation, with direct support and answers to your campaign questions.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Footer */}
+      {/* Clean Mobile-first Footer */}
       <footer className="bg-slate-50 border-t border-slate-200 py-10 sm:py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-6 text-center sm:text-left">
           <div className="flex items-center gap-3">
@@ -372,14 +462,14 @@ export default function Home() {
             </div>
             <div>
               <div className="font-extrabold text-sm text-slate-900">Apex Marketing Hub</div>
-              <div className="text-[11px] text-slate-400">Next-Generation Marketing Education</div>
+              <div className="text-[11px] text-slate-400">Social Media Monetization & Growth Platform</div>
             </div>
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-5 sm:gap-6 text-xs text-slate-500">
-            <a href="#courses" className="hover:text-slate-900">Courses</a>
-            <a href="#evidence" className="hover:text-slate-900">Student Proof</a>
-            <Link href="/dashboard" className="hover:text-slate-900">Student Portal</Link>
+            <a href="#courses" className="hover:text-slate-900 font-semibold">Courses (2,500 ETB)</a>
+            <a href="#evidence" className="hover:text-slate-900 font-semibold">Student Proof</a>
+            <Link href="/dashboard" className="hover:text-slate-900 font-semibold">Student Portal</Link>
             <a href="mailto:apexmarketinghub01@gmail.com" className="hover:text-slate-900">Support</a>
           </div>
 
@@ -388,6 +478,12 @@ export default function Home() {
           </div>
         </div>
       </footer>
+
+      {/* Interactive Testimony & Blueprint Modal */}
+      <TestimonyModal
+        evidence={activeTestimony}
+        onClose={() => setActiveTestimony(null)}
+      />
     </div>
   );
 }
