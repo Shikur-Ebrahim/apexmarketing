@@ -139,7 +139,7 @@ export default function Home() {
               <div className="text-xs text-slate-500 font-medium mt-0.5">Average Rating (1,400+ reviews)</div>
             </div>
             <div>
-              <div className="text-2xl sm:text-3xl font-extrabold text-slate-900">$15M+</div>
+              <div className="text-2xl sm:text-3xl font-extrabold text-slate-900">150M+ ETB</div>
               <div className="text-xs text-slate-500 font-medium mt-0.5">Ad Spend Tested Frameworks</div>
             </div>
             <div>
@@ -266,9 +266,9 @@ export default function Home() {
                   <div className="p-6 pt-0 mt-auto">
                     <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
                       <div className="flex items-baseline gap-1.5">
-                        <span className="text-xl font-extrabold text-slate-900">${course.price}</span>
+                        <span className="text-xl font-extrabold text-slate-900">{course.price.toLocaleString()} ETB</span>
                         <span className="text-xs text-slate-400 line-through">
-                          ${course.originalPrice}
+                          {course.originalPrice.toLocaleString()} ETB
                         </span>
                       </div>
 

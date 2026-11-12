@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { sendVerificationEmail } from "@/lib/resend";
+import { storeOtp } from "@/lib/otpStore";
 
 export async function POST(request: Request) {
   try {
@@ -13,6 +14,9 @@ export async function POST(request: Request) {
     }
 
     const verificationCode = code || Math.floor(100000 + Math.random() * 900000).toString();
+
+    // Store in OTP memory store for validation
+    storeOtp(email, verificationCode);
 
     const result = await sendVerificationEmail({
       to: email,

@@ -489,7 +489,7 @@ export default function AdminPage() {
                       required
                       value={newMetric}
                       onChange={(e) => setNewMetric(e.target.value)}
-                      placeholder="e.g. +$24,500 / mo"
+                      placeholder="e.g. +145,000 ETB / mo"
                       className="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs focus:outline-none focus:border-sky-500"
                     />
                   </div>
