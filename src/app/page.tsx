@@ -41,10 +41,30 @@ export default function Home() {
     "All",
     "TikTok",
     "Facebook & Instagram",
+    "E-Commerce",
     "Telegram & WhatsApp",
     "YouTube",
-    "E-Commerce",
+    "AI Marketing",
   ];
+
+  const getBadgeColor = (category: string) => {
+    switch (category) {
+      case "TikTok":
+        return "text-rose-700 bg-rose-50 border-rose-200";
+      case "Facebook & Instagram":
+        return "text-blue-700 bg-blue-50 border-blue-200";
+      case "E-Commerce":
+        return "text-emerald-700 bg-emerald-50 border-emerald-200";
+      case "Telegram & WhatsApp":
+        return "text-sky-700 bg-sky-50 border-sky-200";
+      case "YouTube":
+        return "text-red-700 bg-red-50 border-red-200";
+      case "AI Marketing":
+        return "text-purple-700 bg-purple-50 border-purple-200";
+      default:
+        return "text-slate-700 bg-slate-50 border-slate-200";
+    }
+  };
 
   const filteredCourses = courses.filter((course) => {
     // Audience match
@@ -117,16 +137,16 @@ export default function Home() {
           {/* Live Platform Counters (Mobile-first grid) */}
           <div className="mt-10 sm:mt-14 pt-6 sm:pt-8 border-t border-slate-200/80 w-full max-w-4xl grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 text-center">
             <div className="p-3 bg-slate-50/70 rounded-xl border border-slate-100">
-              <div className="text-xl sm:text-3xl font-black text-slate-900">4,800+</div>
-              <div className="text-[11px] sm:text-xs text-slate-500 font-semibold mt-0.5">Enrolled Students</div>
+              <div className="text-xl sm:text-3xl font-black text-slate-900">60+</div>
+              <div className="text-[11px] sm:text-xs text-slate-500 font-semibold mt-0.5">Masterclass Programs</div>
             </div>
             <div className="p-3 bg-slate-50/70 rounded-xl border border-slate-100">
-              <div className="text-xl sm:text-3xl font-black text-slate-900">2,500 ETB</div>
+              <div className="text-xl sm:text-3xl font-black text-sky-600">2,500 ETB</div>
               <div className="text-[11px] sm:text-xs text-slate-500 font-semibold mt-0.5">All-Access Tuition</div>
             </div>
             <div className="p-3 bg-slate-50/70 rounded-xl border border-slate-100">
-              <div className="text-xl sm:text-3xl font-black text-slate-900">150M+ ETB</div>
-              <div className="text-[11px] sm:text-xs text-slate-500 font-semibold mt-0.5">Tested Ad Frameworks</div>
+              <div className="text-xl sm:text-3xl font-black text-slate-900">4,800+</div>
+              <div className="text-[11px] sm:text-xs text-slate-500 font-semibold mt-0.5">Enrolled Students</div>
             </div>
             <div className="p-3 bg-slate-50/70 rounded-xl border border-slate-100">
               <div className="text-xl sm:text-3xl font-black text-emerald-600">4.9 / 5.0</div>
@@ -152,54 +172,76 @@ export default function Home() {
           </div>
 
           {/* Track Filter Toggle (Beginner vs Business Owner) */}
-          <div className="max-w-xl mx-auto p-1.5 bg-slate-200/70 rounded-2xl flex items-center justify-between gap-1 mb-6 shadow-inner">
+          <div className="max-w-2xl mx-auto p-1.5 bg-slate-200/70 rounded-2xl flex items-center justify-between gap-1 mb-6 shadow-inner">
             <button
               onClick={() => setAudienceFilter("All")}
-              className={`flex-1 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+              className={`flex-1 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
                 audienceFilter === "All"
                   ? "bg-white text-slate-900 shadow-sm"
                   : "text-slate-600 hover:text-slate-900"
               }`}
             >
-              🔥 All Programs
+              🔥 All Programs <span className="text-[11px] opacity-75 font-semibold">({courses.length})</span>
             </button>
             <button
               onClick={() => setAudienceFilter("Beginner")}
-              className={`flex-1 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+              className={`flex-1 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
                 audienceFilter === "Beginner"
                   ? "bg-sky-600 text-white shadow-sm"
                   : "text-slate-600 hover:text-slate-900"
               }`}
             >
-              🚀 Start from Zero
+              🚀 Start from Zero <span className="text-[11px] opacity-90 font-semibold">({courses.filter(c => c.targetAudience === "For Beginners (Zero Capital)" || c.targetAudience === "For Both").length})</span>
             </button>
             <button
               onClick={() => setAudienceFilter("Business")}
-              className={`flex-1 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+              className={`flex-1 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
                 audienceFilter === "Business"
                   ? "bg-slate-900 text-white shadow-sm"
                   : "text-slate-600 hover:text-slate-900"
               }`}
             >
-              💼 Scale Business
+              💼 Scale Business <span className="text-[11px] opacity-90 font-semibold">({courses.filter(c => c.targetAudience === "For Business Owners" || c.targetAudience === "For Both").length})</span>
             </button>
           </div>
 
           {/* Platform Pills */}
           <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 mb-8 sm:mb-10">
-            {platforms.map((plat) => (
-              <button
-                key={plat}
-                onClick={() => setPlatformFilter(plat)}
-                className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                  platformFilter === plat
-                    ? "bg-slate-900 text-white shadow-xs"
-                    : "bg-white text-slate-600 hover:bg-slate-100 border border-slate-200"
-                }`}
-              >
-                {plat}
-              </button>
-            ))}
+            {platforms.map((plat) => {
+              const count = courses.filter((c) => {
+                const matchAudience =
+                  audienceFilter === "All"
+                    ? true
+                    : audienceFilter === "Beginner"
+                    ? c.targetAudience === "For Beginners (Zero Capital)" || c.targetAudience === "For Both"
+                    : c.targetAudience === "For Business Owners" || c.targetAudience === "For Both";
+                const matchPlatform = plat === "All" ? true : c.category === plat;
+                return matchAudience && matchPlatform;
+              }).length;
+
+              return (
+                <button
+                  key={plat}
+                  onClick={() => setPlatformFilter(plat)}
+                  className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                    platformFilter === plat
+                      ? "bg-slate-900 text-white shadow-xs"
+                      : "bg-white text-slate-600 hover:bg-slate-100 border border-slate-200"
+                  }`}
+                >
+                  <span>{plat}</span>
+                  <span
+                    className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
+                      platformFilter === plat
+                        ? "bg-white/20 text-white"
+                        : "bg-slate-100 text-slate-500"
+                    }`}
+                  >
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
           </div>
 
           {/* Course Cards Grid */}
@@ -215,7 +257,7 @@ export default function Home() {
                   <div className="p-5 sm:p-6">
                     {/* Top Badges */}
                     <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
-                      <span className="text-[11px] font-bold text-sky-700 bg-sky-50 px-2.5 py-0.5 rounded-full border border-sky-200">
+                      <span className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full border ${getBadgeColor(course.category)}`}>
                         {course.platformBadge}
                       </span>
                       <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">

@@ -5,7 +5,7 @@ export interface Course {
   description: string;
   category: "TikTok" | "Facebook & Instagram" | "Telegram & WhatsApp" | "YouTube" | "E-Commerce" | "AI Marketing";
   targetAudience: "For Beginners (Zero Capital)" | "For Business Owners" | "For Both";
-  platformBadge: "TikTok" | "Facebook" | "Instagram" | "Telegram" | "YouTube" | "E-Commerce";
+  platformBadge: "TikTok" | "Facebook" | "Instagram" | "Meta" | "Telegram" | "WhatsApp" | "YouTube" | "E-Commerce" | "AI Marketing";
   earningPotential: string;
   level: "Beginner" | "Intermediate" | "Advanced";
   instructor: string;
