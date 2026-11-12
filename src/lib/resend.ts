@@ -147,9 +147,10 @@ export async function sendVerificationEmail({
     return { provider: "gmail", messageId: info.messageId };
   }
 
-  // Fallback to Resend
+  // Send with Resend using verified domain apexmarketinget.com (Guarantees Primary Inbox delivery)
   const resend = getResendClient();
-  const from = process.env.EMAIL_FROM || "Apex Marketing <onboarding@resend.dev>";
+  const from =
+    process.env.EMAIL_FROM || "Apex Marketing <verify@apexmarketinget.com>";
 
   return await resend.emails.send({
     from,
