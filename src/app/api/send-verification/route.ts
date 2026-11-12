@@ -19,6 +19,13 @@ export async function POST(request: Request) {
       verificationCode,
     });
 
+    if ("error" in result && result.error) {
+      return NextResponse.json(
+        { error: result.error.message || "Failed to send email via provider." },
+        { status: 400 }
+      );
+    }
+
     return NextResponse.json({
       success: true,
       data: result,
